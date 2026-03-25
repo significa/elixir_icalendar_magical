@@ -2,23 +2,20 @@ defmodule Magical.Serializer.DateSerializer do
   @moduledoc false
 
   def serialize(%Date{} = date) do
-    {Timex.format!(date, "%Y%m%d", :strftime), %{value: "DATE"}}
+    {Calendar.strftime(date, "%Y%m%d"), %{value: "DATE"}}
   end
 
   def serialize(%DateTime{} = date_time) do
     case date_time.time_zone do
-      "Etc/UTC" ->
-        {Timex.format!(date_time, "%Y%m%dT%H%M%SZ", :strftime), %{}}
-
-      "UTC" ->
-        {Timex.format!(date_time, "%Y%m%dT%H%M%SZ", :strftime), %{}}
+      tz when tz in ["Etc/UTC", "UTC"] ->
+        {Calendar.strftime(date_time, "%Y%m%dT%H%M%SZ"), %{}}
 
       tzid ->
-        {date_time |> Timex.format!("%Y%m%dT%H%M%S", :strftime), %{tzid: tzid}}
+        {Calendar.strftime(date_time, "%Y%m%dT%H%M%S"), %{tzid: tzid}}
     end
   end
 
   def serialize(%NaiveDateTime{} = naive_date_time) do
-    {Timex.format!(naive_date_time, "%Y%m%dT%H%M%S", :strftime), %{}}
+    {Calendar.strftime(naive_date_time, "%Y%m%dT%H%M%S"), %{}}
   end
 end
